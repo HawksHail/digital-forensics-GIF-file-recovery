@@ -1,0 +1,14 @@
+*.[oa]
+CMakeLists.txt
+.idea
+src/linux/*/exe/
+src/linux/bin/
+*.*~
+*.out
+*~
+exe/
+bin/
+obj/
+jni/
+
+.vscode/

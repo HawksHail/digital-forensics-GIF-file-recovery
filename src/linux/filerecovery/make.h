@@ -1,0 +1,32 @@
+include ../make.h
+#Module name (directory name )
+MODULE = filerecovery
+
+MODULE_DIR = ${BASE_DIR}/${MODULE}
+
+#Include files directory
+MODULE_INC_DIR = ${MODULE_DIR}/inc
+MODULE_INC_GBD_DIR = ${BASE_DIR}/gbd/inc
+MODULE_SRC_GBD_DIR = ${BASE_DIR}/gbd/src
+
+#Source files directory
+MODULE_SRC_DIR = ${MODULE_DIR}/src
+
+#Object files directory
+MODULE_OBJ_DIR = ${MODULE_DIR}/obj
+
+#Library files directory
+MODULE_EXE_DIR = ${MODULE_DIR}/exe
+
+#Library files directory
+MODULE_LIB_DIR =
+
+#Other include directiories
+COMMON_INC_DIR = ${BASE_DIR}/common/inc
+HASH_INC_DIR = ${BASE_DIR}/uthash/include
+
+MODULE_FINAL_INC_DIRS = -I${MODULE_INC_DIR} \
+-I${COMMON_INC_DIR} \
+-I${HASH_INC_DIR} \
+-I${MODULE_INC_GBD_DIR} \
+-I${MODULE_SRC_GBD_DIR}

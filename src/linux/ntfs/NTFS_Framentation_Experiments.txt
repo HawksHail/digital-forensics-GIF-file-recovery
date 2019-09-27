@@ -1,0 +1,33 @@
+NTFS Fragmentation Experiment Scenarios
+
+Below are a few scenarios to test.  Use mft_reader to get the cluster
+runs and see how fragmented a file is.  Before each scenario, you may
+want to format the disk to have a more controlled experiment.
+
+Scenario 1:
+
+- Copy two 2MB files individually
+- Delete the first one (i.e., one closest to the beginning of the disk)
+- Copy a 1MB file
+
+Question: Where does the 1MB file get placed?  Is it where the first 2MB 
+          file used to be or is it placed after the second 2MB file?
+
+Scenario 2:
+
+- Copy two 2MB files individually
+- Delete the first one
+- Copy a 5MB file
+
+Question: Does the 5MB file get fragmented or is it placed after the 
+          second 2MB file to keep it contiguous?
+
+Scenario 3:
+
+- Copy as many 'x' MB files until the disk is full
+- Delete every other one (This forces a lot of free gaps to appear)
+- Copy a large file (roughly half the disk size)
+
+Question: How fragmented does the file become?  Is it possible to have
+          too many fragments where a file cannot be copied?  To test this
+          you'll have to keep making 'x' smaller and smaller on each run.

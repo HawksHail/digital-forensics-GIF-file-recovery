@@ -1,0 +1,47 @@
+Current commands limit to one (don't mix and match)
+
+./exe/mft_reader [options] <disk_partition_location>
+
+options:
+
+-f : list all files
+     sudo ./bin/ntfs -f /dev/sdb1
+
+-l : list all deleted files
+     sudo ./bin/ntfs -l /dev/sdb1
+
+-e <entry_idx>
+   : print all attributes for entry e
+     sudo ./bin/ntfs -e 0 /dev/sdb1
+
+-d <entry_idx>
+   : print directory and contents based on mft entry idx
+     sudo ./exe/mft_reader -d 5 /dev/sdb1
+
+
+     
+This project is designed to parse an NTFS formatted disk and
+completely recover any deleted files.  The current status is
+below.
+
+Working (untested):
+- NTFS Boot Sector parsed
+- MFT File parsed
+- Minimal MFT Entry parsing
+	- Gets file name
+	- Gets cluster runs when file is non-resident
+
+TODO:
+- Create a function that recovers data given cluster run list
+
+To compile, run 'make ntfs' in the upper linux/ source directory.  
+Executable will be placed in the bin/ folder
+
+To run: ./ntfs <disk_partition_location>
+Example: sudo ./ntfs /dev/sdb1
+
+Make sure to point it to the partition and not the MBR.
+
+While the program is running you can enter an entry index
+and it will display the relevant information.
+
