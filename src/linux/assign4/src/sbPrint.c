@@ -41,7 +41,11 @@ int init(FILE *pFile)
 	int x = 0;
 	while(sb.s_magic == MAGIC_NUMBER){
 		// printf("sb Address: %p\n", &sb);
+		if (x == 0){
+		printf("Super Block %i\n", 0);
+		} else {
 		printf("Super Block %i\n", ai8SuperBlockGrpNums[x-1]);
+		}
 		sbPrintSuperblocks(&sb);
 		sbGetSuperblock(pFile, ai8SuperBlockGrpNums[x], &sb);
 		++x;
