@@ -1,6 +1,6 @@
 #include the Product make.h
 include ./make.h
-.PHONY: all clean mbr gbd inode superblock filerecovery gui ntfs assign4
+.PHONY: all clean mbr gbd inode superblock filerecovery gui ntfs assign4 assign5
 all:
 	make -C $(BASE_DIR)/mbr
 	make -C $(BASE_DIR)/gbd
@@ -8,14 +8,16 @@ all:
 	make -C $(BASE_DIR)/superblock
 	make -C $(BASE_DIR)/filerecovery
 	make -C $(BASE_DIR)/assign4
-#	make -C $(BASE_DIR)/gui
+	make -C $(BASE_DIR)/assign5	
+	#make -C $(BASE_DIR)/gui
 	cp $(BASE_DIR)/mbr/exe/* $(BASE_DIR)/bin
 	cp $(BASE_DIR)/gbd/exe/* $(BASE_DIR)/bin
 	cp $(BASE_DIR)/inode/exe/* $(BASE_DIR)/bin
 	cp $(BASE_DIR)/superblock/exe/* $(BASE_DIR)/bin
 	cp $(BASE_DIR)/filerecovery/exe/* $(BASE_DIR)/bin
 	cp $(BASE_DIR)/assign4/exe/* $(BASE_DIR)/bin
-#	cp $(BASE_DIR)/gui/exe/* $(BASE_DIR)/bin
+	cp $(BASE_DIR)/assign5/exe/* $(BASE_DIR)/bin
+	#cp $(BASE_DIR)/gui/exe/* $(BASE_DIR)/bin
 
 mbr:
 	make -w -C $(BASE_DIR)/mbr
@@ -33,10 +35,6 @@ superblock:
 	make -C $(BASE_DIR)/superblock
 	cp $(BASE_DIR)/superblock/exe/* $(BASE_DIR)/bin
 
-assign4:
-	make -C $(BASE_DIR)/assign4
-	cp $(BASE_DIR)/assign4/exe/* $(BASE_DIR)/bin
-
 filerecovery:
 	make -C $(BASE_DIR)/filerecovery
 	cp $(BASE_DIR)/filerecovery/exe/* $(BASE_DIR)/bin
@@ -49,6 +47,14 @@ ntfs:
 	make -C $(BASE_DIR)/ntfs
 	cp $(BASE_DIR)/ntfs/exe/* $(BASE_DIR)/bin
 
+assign4:
+	make -C $(BASE_DIR)/assign4
+	cp $(BASE_DIR)/assign4/exe/* $(BASE_DIR)/bin
+
+assign5:
+	make -C $(BASE_DIR)/assign5
+	cp $(BASE_DIR)/assign5/exe/* $(BASE_DIR)/bin
+
 clean:
 	make -w -C $(BASE_DIR)/mbr clean
 	make -w -C $(BASE_DIR)/gbd clean
@@ -57,7 +63,6 @@ clean:
 	make -w -C $(BASE_DIR)/filerecovery clean
 	make -w -C $(BASE_DIR)/gui clean
 	make -w -C $(BASE_DIR)/ntfs clean
-	make -w -C $(BASE_DIR)/assign4 clean
 	rm $(BASE_DIR)/bin/*
 
 debug:
