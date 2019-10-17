@@ -1,0 +1,24 @@
+#include the make.h
+include ./make.h
+
+MODULE_OBJECT_LIST = $(MODULE_OBJ_DIR)/main.o $(MODULE_OBJ_DIR)/sbPrint.o
+
+MODULE_FINAL_EXE = $(MODULE_EXE_DIR)/assign7
+
+MODULE_LIBS_LIST = -lm
+
+$(MODULE_FINAL_EXE): $(MODULE_OBJECT_LIST)
+	@echo $(MODULE_LIB_DIR)
+	$(CC) -g -O2 $(MODULE_OBJECT_LIST) $(MODULE_STATIC_LIBS_DIR) $(MODULE_LIBS_LIST) -o $(MODULE_FINAL_EXE)
+
+$(MODULE_OBJ_DIR)/main.o: $(MODULE_SRC_DIR)/main.c
+	$(CC) $(CC_FLAGS) $(MODULE_FINAL_INC_DIRS) -o $(MODULE_OBJ_DIR)/main.o $(MODULE_SRC_DIR)/main.c
+
+$(MODULE_OBJ_DIR)/sbPrint.o: $(MODULE_SRC_DIR)/sbPrint.c
+	$(CC) $(CC_FLAGS) $(MODULE_FINAL_INC_DIRS) -o $(MODULE_OBJ_DIR)/sbPrint.o $(MODULE_SRC_DIR)/sbPrint.c
+
+
+clean:
+	rm -f $(MODULE_OBJ_DIR)/*
+	rm -f $(MODULE_EXE_DIR)/*
+
