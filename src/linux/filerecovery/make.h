@@ -23,7 +23,7 @@ MODULE_LIB_DIR =
 
 #Other include directiories
 COMMON_INC_DIR = ${BASE_DIR}/common/inc
-HASH_INC_DIR = ${BASE_DIR}/uthash/include
+HASH_INC_DIR = ${BASE_DIR}/uthash/src
 
 MODULE_FINAL_INC_DIRS = -I${MODULE_INC_DIR} \
 -I${COMMON_INC_DIR} \
