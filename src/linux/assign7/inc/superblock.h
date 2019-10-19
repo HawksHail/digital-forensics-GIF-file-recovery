@@ -28,65 +28,65 @@ INT8 gTotalBlocks;
 tSuperblock gPrimarySuperblock;
 tSuperblock gFiveSuperblockArray[5];
 
-void sbCorruptSuperblock()
-{
-	printf("/Corrupting...\n");
-	FILE *pFile;
-	pFile = fopen("/dev/sdb1", "rb+");
-	UCHAR ucCorruptByte = CORRUPT_BYTE;
-	INT2 i2RetVal1, i2RetVal2;
-	i2RetVal1 = fseek(pFile, MAG_NUM_OFFSET, SEEK_SET);
-	if(i2RetVal1 != 0)
-	{
-		if (ferror(pFile))
-		{
-			perror("fseek()");
-			fprintf(stderr,"fseek() failed in file %s at line # %d\n", __FILE__,__LINE__-5);
-			exit(EXIT_FAILURE);
-		}
-	}
-	i2RetVal2 = fwrite(&ucCorruptByte, 1, 1, pFile);
-	if (i2RetVal2 < 1)
-	{
-		if (ferror(pFile))
-		{
-			perror("fwrite()");
-			fprintf(stderr,"fwrite() failed in file %s at line # %d\n", __FILE__,__LINE__-5);
-			exit(EXIT_FAILURE);
-		}
-	}
-	fclose(pFile);
-}
+// void sbCorruptSuperblock()
+// {
+// 	printf("/Corrupting...\n");
+// 	FILE *pFile;
+// 	pFile = fopen("/dev/sdb1", "rb+");
+// 	UCHAR ucCorruptByte = CORRUPT_BYTE;
+// 	INT2 i2RetVal1, i2RetVal2;
+// 	i2RetVal1 = fseek(pFile, MAG_NUM_OFFSET, SEEK_SET);
+// 	if(i2RetVal1 != 0)
+// 	{
+// 		if (ferror(pFile))
+// 		{
+// 			perror("fseek()");
+// 			fprintf(stderr,"fseek() failed in file %s at line # %d\n", __FILE__,__LINE__-5);
+// 			exit(EXIT_FAILURE);
+// 		}
+// 	}
+// 	i2RetVal2 = fwrite(&ucCorruptByte, 1, 1, pFile);
+// 	if (i2RetVal2 < 1)
+// 	{
+// 		if (ferror(pFile))
+// 		{
+// 			perror("fwrite()");
+// 			fprintf(stderr,"fwrite() failed in file %s at line # %d\n", __FILE__,__LINE__-5);
+// 			exit(EXIT_FAILURE);
+// 		}
+// 	}
+// 	fclose(pFile);
+// }
 
-void sbFixSuperblock()
-{
-	printf("/Fixing...\n");
-	FILE *pFile;
-	pFile = fopen("/dev/sdb1", "rb+");
-	UCHAR *pucMagicNumBytes = MAGIC_NUMBER;
-	INT2 i2RetVal1, i2RetVal2;
-	i2RetVal1 = fseek(pFile, MAG_NUM_OFFSET, SEEK_SET);
-	if(i2RetVal1 != 0)
-	{
-		if (ferror(pFile))
-		{
-			perror("fseek()");
-			fprintf(stderr,"fseek() failed in file %s at line # %d\n", __FILE__,__LINE__-5);
-			exit(EXIT_FAILURE);
-		}
-	}
-	i2RetVal2 = fwrite(&pucMagicNumBytes, 2, 1, pFile);
-	if (i2RetVal2 < 1)
-	{
-		if (ferror(pFile))
-		{
-			perror("fwrite()");
-			fprintf(stderr,"fwrite() failed in file %s at line # %d\n", __FILE__,__LINE__-5);
-			exit(EXIT_FAILURE);
-		}
-	}
-	fclose(pFile);
-}
+// void sbFixSuperblock()
+// {
+// 	printf("/Fixing...\n");
+// 	FILE *pFile;
+// 	pFile = fopen("/dev/sdb1", "rb+");
+// 	UCHAR *pucMagicNumBytes = MAGIC_NUMBER;
+// 	INT2 i2RetVal1, i2RetVal2;
+// 	i2RetVal1 = fseek(pFile, MAG_NUM_OFFSET, SEEK_SET);
+// 	if(i2RetVal1 != 0)
+// 	{
+// 		if (ferror(pFile))
+// 		{
+// 			perror("fseek()");
+// 			fprintf(stderr,"fseek() failed in file %s at line # %d\n", __FILE__,__LINE__-5);
+// 			exit(EXIT_FAILURE);
+// 		}
+// 	}
+// 	i2RetVal2 = fwrite(&pucMagicNumBytes, 2, 1, pFile);
+// 	if (i2RetVal2 < 1)
+// 	{
+// 		if (ferror(pFile))
+// 		{
+// 			perror("fwrite()");
+// 			fprintf(stderr,"fwrite() failed in file %s at line # %d\n", __FILE__,__LINE__-5);
+// 			exit(EXIT_FAILURE);
+// 		}
+// 	}
+// 	fclose(pFile);
+// }
 
 #ifdef UNUSED
 /*
@@ -173,7 +173,7 @@ int  sbGetBlockSize(FILE *pFile);
 void *sbFindValidSuperblock(tSuperblock *pSuperblock, INT2 *ai2SuperblockArray);
 int  sbCheckValidSuperblock(tSuperblock *pSuperblock);
 void sbValidateSuperblocks(FILE *pFile);
-void sbGetPrimarySuperblock(FILE *pFile);
+void sbGetPrimarySuperblock(int *pFile);
 void sbAutoRetrieve(FILE *pFile);
 void sbManualRetrieve(FILE *pFile);
 void sbRepairSuperblocks(tSuperblock *pSuperblockBad, tSuperblock *pSuperblockGood);

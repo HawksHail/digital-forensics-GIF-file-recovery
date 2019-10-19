@@ -1,7 +1,7 @@
 #include the make.h
 include ./make.h
 
-MODULE_OBJECT_LIST = $(MODULE_OBJ_DIR)/main.o $(MODULE_OBJ_DIR)/sbPrint.o
+MODULE_OBJECT_LIST = $(MODULE_OBJ_DIR)/main.o 
 
 MODULE_FINAL_EXE = $(MODULE_EXE_DIR)/assign7
 
@@ -13,10 +13,6 @@ $(MODULE_FINAL_EXE): $(MODULE_OBJECT_LIST)
 
 $(MODULE_OBJ_DIR)/main.o: $(MODULE_SRC_DIR)/main.c
 	$(CC) $(CC_FLAGS) $(MODULE_FINAL_INC_DIRS) -o $(MODULE_OBJ_DIR)/main.o $(MODULE_SRC_DIR)/main.c
-
-$(MODULE_OBJ_DIR)/sbPrint.o: $(MODULE_SRC_DIR)/sbPrint.c
-	$(CC) $(CC_FLAGS) $(MODULE_FINAL_INC_DIRS) -o $(MODULE_OBJ_DIR)/sbPrint.o $(MODULE_SRC_DIR)/sbPrint.c
-
 
 clean:
 	rm -f $(MODULE_OBJ_DIR)/*
