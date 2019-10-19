@@ -173,7 +173,7 @@ int  sbGetBlockSize(FILE *pFile);
 void *sbFindValidSuperblock(tSuperblock *pSuperblock, INT2 *ai2SuperblockArray);
 int  sbCheckValidSuperblock(tSuperblock *pSuperblock);
 void sbValidateSuperblocks(FILE *pFile);
-void sbGetPrimarySuperblock(int *pFile);
+void sbGetPrimarySuperblock(int pFile);
 void sbAutoRetrieve(FILE *pFile);
 void sbManualRetrieve(FILE *pFile);
 void sbRepairSuperblocks(tSuperblock *pSuperblockBad, tSuperblock *pSuperblockGood);

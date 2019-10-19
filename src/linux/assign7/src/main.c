@@ -34,7 +34,7 @@ int compareHexValues(unsigned char string1[], unsigned char string2[], int n)
 	return 0;
 }
 
-void sbGetPrimarySuperblock(int *pFile)
+void sbGetPrimarySuperblock(int pFile)
 {
 	// printf("GET SUPERBLOCK\n");
 	tSuperblock primarySB;
@@ -54,9 +54,9 @@ void sbGetPrimarySuperblock(int *pFile)
 	gPrimarySuperblock = primarySB;
 }
 
-void searchGIF(int *fp)
+void searchGIF(int fp)
 {
-	// printf("GIF");
+	printf("GIF");
 	unsigned char header[4];
 	header[0] = 0x47;
 	header[1] = 0x49;
@@ -65,7 +65,7 @@ void searchGIF(int *fp)
 
 	unsigned int block_size = 1024 << gPrimarySuperblock.s_log_block_size;
 	int blocks_in_partition = gPrimarySuperblock.s_blocks_count;
-	// printf(" %d\n", block_size);
+	printf(" %d\n", block_size);
 
 	unsigned char b[8];
 	int headerLength = 4;
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 		printf("Error: Wrong number of args, 2 expected\n");
 		return -1;
 	}
-	int *fp = open(argv[1], O_RDONLY);
+	int fp = open(argv[1], O_RDONLY);
 	// printf("FP:%d\n", fp);
 
 	if (fp < 0)
