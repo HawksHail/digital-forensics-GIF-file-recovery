@@ -43,7 +43,7 @@ void findIndirectBlocks(int fp)
 	int blocks_in_partition = gPrimarySuperblock.s_blocks_count;
 	int totalBlockNum = block_size/4;
 	
-	printf("Block Size: %d\tExpected Amount of Block Numbers: %d\n", block_size, totalBlockNum);
+	printf("Block Size: %d\tExpected Amount of Block Numbers: %d\n", blocks_in_partition, totalBlockNum);
 
 	unsigned char currentBlockNum[4];
 	unsigned char prevBlockNum[4];
@@ -64,12 +64,11 @@ void findIndirectBlocks(int fp)
 		
 		//traverse through current block
 		int j = 1; int n = 0;
-		for(; j < totalBlockNum; j++){			
-			
+		for(; j < totalBlockNum; j++){				
 			if(read(fp, currentBlockNum, blockLength) < 0){
 				perror("read() error");
 			}
-
+		
 			long prev = firstBlock; long cur = hexToNum(currentBlockNum);
 			//compare blocks
 			if(prev + 1 == cur){
@@ -78,7 +77,7 @@ void findIndirectBlocks(int fp)
 				if(j > 3 && n == 0){
 					j++;
 					break; //not an indirect block
-				}else if(j > 3 && n > 0){
+				}else if(j > 3 && n > 1){
 					j++;
 					lastBlock = prev; 
 					break;
@@ -104,7 +103,7 @@ void findIndirectBlocks(int fp)
 		}
 	}
 
-	//printf("DONE READING!\n");
+	printf("DONE READING! %d\n", blocks_in_partition);
 }
 
 int main(int argc, char **argv)
