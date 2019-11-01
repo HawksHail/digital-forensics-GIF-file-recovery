@@ -37,13 +37,13 @@ void sbGetPrimarySuperblock(int pFile)
 	gPrimarySuperblock = primarySB;
 }
 
-void searchGIF(int fp)
+void findIndirectBlocks(int fp)
 {
 	unsigned int block_size = 1024 << gPrimarySuperblock.s_log_block_size;
 	int blocks_in_partition = gPrimarySuperblock.s_blocks_count;
 	int totalBlockNum = block_size/4;
 	
-	printf("Block Size: %d\tExpected Block Numbers: %d\n", block_size, totalBlockNum);
+	printf("Block Size: %d\tExpected Amount of Block Numbers: %d\n", block_size, totalBlockNum);
 
 	unsigned char currentBlockNum[4];
 	unsigned char prevBlockNum[4];
@@ -78,7 +78,7 @@ void searchGIF(int fp)
 				if(j > 3 && n == 0){
 					j++;
 					break; //not an indirect block
-				}else if(j > 3 && n > 1){
+				}else if(j > 3 && n > 0){
 					j++;
 					lastBlock = prev; 
 					break;
@@ -104,7 +104,7 @@ void searchGIF(int fp)
 		}
 	}
 
-	printf("DONE READING!\n");
+	//printf("DONE READING!\n");
 }
 
 int main(int argc, char **argv)
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 	sbGetPrimarySuperblock(fp);
-	searchGIF(fp);
+	findIndirectBlocks(fp);
 	close(fp);
 	return 0;
 }
