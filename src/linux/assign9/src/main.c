@@ -13,9 +13,38 @@
 #include "superblock.h"
 
 //Converts 4 byte hexadecimal to decimal
-long hexToNum(unsigned char hex[]){
-	return ((long) hex[3] << 24) | (hex[2] << 16) | (hex[1] << 8) | hex[0];
+long long hexToNum(unsigned char hex[]){
+	return ((long long) hex[3] << 24) | (hex[2] << 16) | (hex[1] << 8) | hex[0];
 } 
+
+/*
+This utility function compares the hex values of two character arrays upto a certain length (n)
+*/
+int compareHexValues(unsigned char string1[], unsigned char string2[], int n)
+{
+	int i;int num1;
+	for (i = 0; i < n; i++)
+	{
+		if(i == 0){
+			num1 = (int) string1[i] +1;
+		}else{
+			num1 = string1[i];
+		}
+
+		if (num1 == (int)string2[i])
+		{
+			if (i == n - 1)
+			{
+				return 1;
+			}
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	return 0;
+}
 
 void sbGetPrimarySuperblock(int pFile)
 {
@@ -37,73 +66,71 @@ void sbGetPrimarySuperblock(int pFile)
 	gPrimarySuperblock = primarySB;
 }
 
+int isIndirectBlock(unsigned char block[], int block_size, int block_num){
+	int count = 0; int last = 0; //count # of consecutive blocks	
+	int size = block_size/4;	
+	unsigned char b1[4];
+	unsigned char b2[4];
+
+	for(int i = 0; i < size - 1; i++){
+		memcpy(b1, block+(i*4), sizeof(unsigned char)*4);
+		memcpy(b2, block+((i+1)*4), sizeof(unsigned char)*4);
+		if(compareHexValues(b1, b2, 4) == 1){
+			//printf("b1: %d(%llu)\t b2: %d(%llu)\n", (int) b1[0], hexToNum(b1), (int)b2[0], hexToNum(b2));			
+			count++;
+			last = i + 1;
+		}else if(hexToNum(b1)==0 && hexToNum(b2) == 0){		
+			break; // no more entries in block
+		}
+
+	}
+
+	//get first and last entries
+	memcpy(b1, block, sizeof(unsigned char) * 4);
+	memcpy(b2, block + (last*4), sizeof(unsigned char)*4);
+	
+	if(count > 3){ //found indirect block -- greater than 3 in case there are 2 consecutive hex values
+		//printf("consecutive: %d -- \n", count);
+		printf("Block: %d\t First Entry: %llu\t Last Entry: %llu\n", block_num, hexToNum(b1), hexToNum(b2));
+		return 1;
+	} 
+			
+
+	return 0;	 
+}
+
 void findIndirectBlocks(int fp)
 {
 	unsigned int block_size = 1024 << gPrimarySuperblock.s_log_block_size;
 	int blocks_in_partition = gPrimarySuperblock.s_blocks_count;
-	int totalBlockNum = block_size/4;
 	
-	printf("Block Size: %d\tExpected Amount of Block Numbers: %d\n", blocks_in_partition, totalBlockNum);
+	printf("Block Size: %d\n", block_size);
 
-	unsigned char currentBlockNum[4];
-	unsigned char prevBlockNum[4];
-	int blockLength = 4;
+	unsigned char block[block_size];
 
 	if (lseek(fp, 0, SEEK_SET) < 0)
 	{
 		perror("lseek() error");
 	}
-	if (read(fp, prevBlockNum, blockLength) < 0)
+	if (read(fp, block, block_size) < 0)
 	{
 		perror("read() error");
 	}
 
 	for (int i = 0; i < blocks_in_partition; i++)
 	{
-		long firstBlock = hexToNum(prevBlockNum); long lastBlock = -1;
-		
-		//traverse through current block
-		int j = 1; int n = 0;
-		for(; j < totalBlockNum; j++){				
-			if(read(fp, currentBlockNum, blockLength) < 0){
-				perror("read() error");
-			}
-		
-			long prev = firstBlock; long cur = hexToNum(currentBlockNum);
-			//compare blocks
-			if(prev + 1 == cur){
-				n++;
-			}else{
-				if(j > 3 && n == 0){
-					j++;
-					break; //not an indirect block
-				}else if(j > 3 && n > 1){
-					j++;
-					lastBlock = prev; 
-					break;
-				}
-			}
-			
-			prev = cur;				
-		} 
-		
-		//print indirect block
-		if(firstBlock != -1 && lastBlock != -1){
-			printf("Block Number: %d\tFirst Block: %lu\tLast Block: %lu Total Number: %d\n", i, firstBlock, lastBlock, n);
-		}		
-
-		if (lseek(fp, block_size - (blockLength * j), SEEK_CUR) < 0)
-		{
-			printf("lseek() error %d, %d, %d", block_size, blockLength, j);
-			perror("ERROR\n");
+		//check if its an indirect block		
+		if(isIndirectBlock(block, block_size, i) == 1){
+			//printf("FOUND BLOCK");
 		}
-		if (read(fp, prevBlockNum, blockLength) < 0)
+		
+		if (read(fp, block, block_size) < 0)
 		{
 			perror("read() error");
 		}
 	}
 
-	printf("DONE READING! %d\n", blocks_in_partition);
+	//printf("DONE READING!\n");
 }
 
 int main(int argc, char **argv)
