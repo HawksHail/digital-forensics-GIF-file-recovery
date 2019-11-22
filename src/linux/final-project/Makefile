@@ -3,7 +3,7 @@ include ./make.h
 
 MODULE_OBJECT_LIST = $(MODULE_OBJ_DIR)/main.o 
 
-MODULE_FINAL_EXE = $(MODULE_EXE_DIR)/assign9
+MODULE_FINAL_EXE = $(MODULE_EXE_DIR)/final-project
 
 MODULE_LIBS_LIST = -lm
 
