@@ -1,6 +1,6 @@
 include ../make.h
 #Module name (directory name )
-MODULE = assign9
+MODULE = final-project
 
 MODULE_DIR = ${BASE_DIR}/${MODULE}
 
