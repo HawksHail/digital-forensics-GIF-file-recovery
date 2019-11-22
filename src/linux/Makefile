@@ -1,6 +1,6 @@
 #include the Product make.h
-include ./make.h
-.PHONY: all clean mbr gbd inode superblock filerecovery gui ntfs assign4 assign5 assign7 assign8 assign9
+include ./make.h 
+.PHONY: all clean mbr gbd inode superblock filerecovery gui ntfs assign4 assign5 assign7 assign8 assign9 finalproject
 all:
 	make -C $(BASE_DIR)/mbr
 	make -C $(BASE_DIR)/gbd
@@ -12,6 +12,7 @@ all:
 	make -C $(BASE_DIR)/assign7
 	make -C $(BASE_DIR)/assign8
 	#make -C $(BASE_DIR)/assign9	
+	make -C $(BASE_DIR)/finalproject
 	#make -C $(BASE_DIR)/gui
 	cp $(BASE_DIR)/mbr/exe/* $(BASE_DIR)/bin
 	cp $(BASE_DIR)/gbd/exe/* $(BASE_DIR)/bin
@@ -22,6 +23,7 @@ all:
 	cp $(BASE_DIR)/assign5/exe/* $(BASE_DIR)/bin
 	cp $(BASE_DIR)/assign7/exe/* $(BASE_DIR)/bin
 	cp $(BASE_DIR)/assign8/exe/* $(BASE_DIR)/bin
+	cp $(BASE_DIR)/finalproject/exe/* $(BASE_DIR)/bin
 	#cp $(BASE_DIR)/assign9/exe/* $(BASE_DIR)/bin
 	#cp $(BASE_DIR)/gui/exe/* $(BASE_DIR)/bin
 
@@ -72,6 +74,11 @@ assign8:
 assign9:
 	make -C $(BASE_DIR)/assign9
 	#cp $(BASE_DIR)/assign9/exe/* $(BASE_DIR)/bin
+
+finalproject:
+	make -C $(BASE_DIR)/finalproject
+	cp $(BASE_DIR)/finalproject/exe/* $(BASE_DIR)/bin
+
 
 clean:
 	make -w -C $(BASE_DIR)/mbr clean
