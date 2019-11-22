@@ -15,26 +15,6 @@
 #define DIR_REC_LEN(DirEntry) (ceil((float)(DirEntry.name_len + \
                             sizeof(UINT8)) / 4) * 4); 
 
-void sbGetPrimarySuperblock(int pFile)
-{
-	// printf("GET SUPERBLOCK\n");
-	tSuperblock primarySB;
-
-	if (lseek(pFile, SB_OFFSET, SEEK_SET) < 0)
-	{
-		perror("lseek() error");
-		exit(1);
-	}
-
-	if (read(pFile, &primarySB, sizeof(tSuperblock)) < 0)
-	{
-		perror("read() error");
-		exit(1);
-	}
-
-	gPrimarySuperblock = primarySB;
-}
-
 INT4 InodeDirReadRecord(CHAR *pEntries, UINT4 u4StartPos, 
         struct ext3_dir_entry_2 *pDirEntry)
 {
@@ -120,7 +100,7 @@ long long hexToNum(unsigned char hex[]){
 /*
 This utility function compares the hex values of two character arrays upto a certain length (n)
 */
-int compareHexValues(unsigned char string1[], unsigned char string2[], int n)
+int compareHexValuesSequential(unsigned char string1[], unsigned char string2[], int n)
 {
 	int i;int num1;
 	for (i = 0; i < n; i++)
@@ -175,7 +155,7 @@ int isIndirectBlock(unsigned char block[], int block_size, int block_num){
 	for(int i = 0; i < size - 1; i++){
 		memcpy(b1, block+(i*4), sizeof(unsigned char)*4);
 		memcpy(b2, block+((i+1)*4), sizeof(unsigned char)*4);
-		if(compareHexValues(b1, b2, 4) == 1){
+		if(compareHexValuesSequential(b1, b2, 4) == 1){
 			//printf("b1: %d(%llu)\t b2: %d(%llu)\n", (int) b1[0], hexToNum(b1), (int)b2[0], hexToNum(b2));			
 			count++;
 			last = i + 1;
@@ -221,7 +201,6 @@ void findIndirectBlocks(int fp)
 	{
 		//check if its an indirect block		
 		if(isIndirectBlock(block, block_size, i) == 1){
-			//printf("FOUND BLOCK");
 		}
 		
 		if (read(fp, block, block_size) < 0)
@@ -229,8 +208,6 @@ void findIndirectBlocks(int fp)
 			perror("read() error");
 		}
 	}
-
-	//printf("DONE READING!\n");
 }
 
 int main(int argc, char **argv)
@@ -250,6 +227,7 @@ int main(int argc, char **argv)
 	}
 	sbGetPrimarySuperblock(fp);
 	findIndirectBlocks(fp);
+	
 	close(fp);
 	return 0;
 }
