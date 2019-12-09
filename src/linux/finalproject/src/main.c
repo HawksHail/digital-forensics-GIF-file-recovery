@@ -12,11 +12,18 @@
 #include <unistd.h>
 #include "superblock.h"
 
+// CS 4398 Final Project - GIF File Recovery
+// Authors:
+// Michael Barre
+// Zion Mantey
+// David Mendoza
+
 #define DIR_REC_LEN(DirEntry) (ceil((float)(DirEntry.name_len + \
 											sizeof(UINT8)) /    \
 									4) *                        \
 							   4);
 
+// Author: N/A, copied from source code
 // given a buffer and a location, read the Inode Directory entry into pDirEntry
 // used to read all the inodes in a directory block so that a new INode entry can be inserted at the end
 INT4 InodeDirReadRecord(CHAR *pEntries, UINT4 u4StartPos,
@@ -36,6 +43,7 @@ INT4 InodeDirReadRecord(CHAR *pEntries, UINT4 u4StartPos,
 	return 1;
 }
 
+// Author: N/A, copied from source code
 /*
 This utility function compares the hex values of two character arrays upto a certain length (n)
 Used to search blocks for the GIF file header
@@ -60,6 +68,7 @@ int compareHexValues(unsigned char string1[], unsigned char string2[], int n)
 	return 0;
 }
 
+// Author: Zion Mantey
 // given an input stream of blocks, search through the blocks for the GIF file header
 // returns the block number of the first header found, this is the block where file recovery should start
 int searchGIF(int fp)
@@ -116,6 +125,7 @@ int searchGIF(int fp)
 	}
 }
 
+// Author: Michael Barre
 // fp is the I/O stream for the filesystem
 // block is a block containing directory records
 // inode is the number of the inode to be added to the end of the list of records
@@ -157,12 +167,14 @@ void insertInodeIntoRoot(int fp, int block, int inode)
 	write(fp, buf, block_size);
 }
 
+// Author: N/A, copied from source code
 //Converts 4 byte hexadecimal to decimal
 long long hexToNum(unsigned char hex[])
 {
 	return ((long long)hex[3] << 24) | (hex[2] << 16) | (hex[1] << 8) | hex[0];
 }
 
+// Author: N/A, copied from source code
 /*
 This utility function compares the hex values of two character arrays upto a certain length (n)
 Used for detecting indirect blocks
@@ -197,6 +209,7 @@ int compareHexValuesSequential(unsigned char string1[], unsigned char string2[],
 	return 0;
 }
 
+// Author: N/A, copied from source code
 // from an I/O stream of a filesystem, set gPrimarySuperblock (a global variable from included header files) to the first superblock in the filesystem
 void sbGetPrimarySuperblock(int pFile)
 {
@@ -218,6 +231,8 @@ void sbGetPrimarySuperblock(int pFile)
 	gPrimarySuperblock = primarySB;
 }
 
+// Author: David Mendoza
+// Modified by: entire team during final project work
 // calculate information about an indirect block
 // fp is an I/O stream for a filesystem
 // block_num is the number of the block being tested
@@ -291,6 +306,7 @@ char *decimalToHexStringInReverseOrder(int decimalNumber)
 	return signs;
 }
 
+// Author: David Mendoza
 // fp is the I/O stream for a filesystem
 // firstDatablock is the first block containing a file's data
 // searches the file system for an indirect block with blocks of this file and returns the block number
@@ -338,6 +354,7 @@ int findIndirectPointerBlock(int fd, int firstDatablock)
 	return 0;
 }
 
+// Author: Entire team during final project work
 // Search a block for the gif EOF marker, starting from the bottom of the block and going until the EOF is found
 // returns the length of non-null data in the block
 // fp is an I/O stream for a file system
@@ -398,6 +415,7 @@ int findEOF(int fp, int last_block)
 // 	}
 // }
 
+// Author: Entire team during final project work
 // Inserts an inode into the first free inode in the filesystem
 // fp is the I/O stream for a filesystem
 // inode_struct is the inode that needs to be inserted
@@ -464,7 +482,7 @@ int insertInodeIntoGD(int fp, struct ext3_inode inode_struct)
 	return count * gPrimarySuperblock.s_inodes_per_group + inode + 1;
 }
 
-
+// Author: Entire team during final project work
 // main function for GIF file recovery
 // expects 2 command line arguments, the device with the filesystem
 // and the block number of the directory entries that the recovered file should be inserted into
