@@ -295,7 +295,9 @@ char *decimalToHexStringInReverseOrder(int decimalNumber)
 	return signs;
 }
 
-//return indirect block of matching datablock
+// fp is the I/O stream for a filesystem
+// firstDatablock is the first block containing a file's data
+// searches the file system for an indirect block with blocks of this file and returns the block number
 int findIndirectPointerBlock(int fd, int firstDatablock)
 {
 	int addrLength = 16;
