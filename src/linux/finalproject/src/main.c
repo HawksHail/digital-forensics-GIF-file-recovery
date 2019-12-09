@@ -62,9 +62,11 @@ int compareHexValues(unsigned char string1[], unsigned char string2[], int n)
 
 // given an input stream of blocks, search through the blocks for the GIF file header
 // returns the block number of the first header found, this is the block where file recovery should start
+// written by Zion
 int searchGIF(int fp)
 {
 	printf("GIF");
+	// header for gif files to search for
 	unsigned char header[4];
 	header[0] = 0x47;
 	header[1] = 0x49;
@@ -93,6 +95,8 @@ int searchGIF(int fp)
 	// }
 	// printf("\n");
 
+	// loop over every block in the partition and check the first 4 bytes to see if they match the header
+	// if it does, return the first block number that matches
 	for (int i = 0; i < blocks_in_partition; i++)
 	{
 		// for (int i = 0; i < headerLength; i++)
@@ -400,6 +404,7 @@ int findEOF(int fp, int last_block)
 // fp is the I/O stream for a filesystem
 // inode_struct is the inode that needs to be inserted
 // used once a file that needs to be recovered is fully located and the inode needs to be stored in the filesystem
+// written by Michael, Davaid, and Zion
 int insertInodeIntoGD(int fp, struct ext3_inode inode_struct)
 {
 	unsigned int block_size = 1024 << gPrimarySuperblock.s_log_block_size;
@@ -466,6 +471,7 @@ int insertInodeIntoGD(int fp, struct ext3_inode inode_struct)
 // main function for GIF file recovery
 // expects 2 command line arguments, the device with the filesystem
 // and the block number of the directory entries that the recovered file should be inserted into
+// written by Michael, Davaid, and Zion
 int main(int argc, char **argv)
 {
 	// argument validation
