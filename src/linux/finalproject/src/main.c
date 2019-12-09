@@ -74,6 +74,7 @@ int compareHexValues(unsigned char string1[], unsigned char string2[], int n)
 int searchGIF(int fp)
 {
 	printf("GIF");
+	// header for gif files to search for
 	unsigned char header[4];
 	header[0] = 0x47;
 	header[1] = 0x49;
@@ -102,6 +103,8 @@ int searchGIF(int fp)
 	// }
 	// printf("\n");
 
+	// loop over every block in the partition and check the first 4 bytes to see if they match the header
+	// if it does, return the first block number that matches
 	for (int i = 0; i < blocks_in_partition; i++)
 	{
 		// for (int i = 0; i < headerLength; i++)
