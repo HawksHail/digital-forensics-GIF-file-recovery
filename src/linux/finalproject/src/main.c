@@ -17,6 +17,8 @@
 									4) *                        \
 							   4);
 
+// given a buffer and a location, read the Inode Directory entry into pDirEntry
+// used to read all the inodes in a directory block so that a new INode entry can be inserted at the end
 INT4 InodeDirReadRecord(CHAR *pEntries, UINT4 u4StartPos,
 						struct ext3_dir_entry_2 *pDirEntry)
 {
@@ -36,6 +38,7 @@ INT4 InodeDirReadRecord(CHAR *pEntries, UINT4 u4StartPos,
 
 /*
 This utility function compares the hex values of two character arrays upto a certain length (n)
+Used to search blocks for the GIF file header
 */
 int compareHexValues(unsigned char string1[], unsigned char string2[], int n)
 {
@@ -57,7 +60,8 @@ int compareHexValues(unsigned char string1[], unsigned char string2[], int n)
 	return 0;
 }
 
-//return first block number
+// given an input stream of blocks, search through the blocks for the GIF file header
+// returns the block number of the first header found, this is the block where file recovery should start
 int searchGIF(int fp)
 {
 	printf("GIF");
@@ -112,6 +116,10 @@ int searchGIF(int fp)
 	}
 }
 
+// fp is the I/O stream for the filesystem
+// block is a block containing directory records
+// inode is the number of the inode to be added to the end of the list of records
+// Used to place a recovered file into a directory, after the inode has been created
 void insertInodeIntoRoot(int fp, int block, int inode)
 {
 	unsigned int block_size = 1024 << gPrimarySuperblock.s_log_block_size;
@@ -157,6 +165,7 @@ long long hexToNum(unsigned char hex[])
 
 /*
 This utility function compares the hex values of two character arrays upto a certain length (n)
+Used for detecting indirect blocks
 */
 int compareHexValuesSequential(unsigned char string1[], unsigned char string2[], int n)
 {
@@ -188,6 +197,7 @@ int compareHexValuesSequential(unsigned char string1[], unsigned char string2[],
 	return 0;
 }
 
+// from an I/O stream of a filesystem, set gPrimarySuperblock (a global variable from included header files) to the first superblock in the filesystem
 void sbGetPrimarySuperblock(int pFile)
 {
 	// printf("GET SUPERBLOCK\n");
@@ -208,7 +218,11 @@ void sbGetPrimarySuperblock(int pFile)
 	gPrimarySuperblock = primarySB;
 }
 
-//return index of last used block
+// calculate information about an indirect block
+// fp is an I/O stream for a filesystem
+// block_num is the number of the block being tested
+// last_block is the last entry in the indirect block, which will later be searched for the GIF EOF
+// returns index of last used block in order to accurately calculate file size
 int isIndirectBlock(int fp, int block_num, int *last_block)
 {
 	unsigned int block_size = 1024 << gPrimarySuperblock.s_log_block_size;
@@ -322,6 +336,10 @@ int findIndirectPointerBlock(int fd, int firstDatablock)
 	return 0;
 }
 
+// Search a block for the gif EOF marker, starting from the bottom of the block and going until the EOF is found
+// returns the length of non-null data in the block
+// fp is an I/O stream for a file system
+// last_block is the block number that is being searched for the GIF EOF
 int findEOF(int fp, int last_block)
 {
 	unsigned int block_size = 1024 << gPrimarySuperblock.s_log_block_size;
@@ -378,7 +396,10 @@ int findEOF(int fp, int last_block)
 // 	}
 // }
 
-// return inode number
+// Inserts an inode into the first free inode in the filesystem
+// fp is the I/O stream for a filesystem
+// inode_struct is the inode that needs to be inserted
+// used once a file that needs to be recovered is fully located and the inode needs to be stored in the filesystem
 int insertInodeIntoGD(int fp, struct ext3_inode inode_struct)
 {
 	unsigned int block_size = 1024 << gPrimarySuperblock.s_log_block_size;
@@ -441,13 +462,19 @@ int insertInodeIntoGD(int fp, struct ext3_inode inode_struct)
 	return count * gPrimarySuperblock.s_inodes_per_group + inode + 1;
 }
 
+
+// main function for GIF file recovery
+// expects 2 command line arguments, the device with the filesystem
+// and the block number of the directory entries that the recovered file should be inserted into
 int main(int argc, char **argv)
 {
+	// argument validation
 	if (argc != 3)
 	{
 		printf("Error: Wrong number of args, 2 expected\n");
 		return -1;
 	}
+	// open the filesystem
 	int fp = open(argv[1], O_RDWR);
 	// printf("FP:%d\n", fp);
 
@@ -456,24 +483,31 @@ int main(int argc, char **argv)
 		printf("Error %s\n", strerror(errno));
 		return -1;
 	}
+	// set the primary super block, which will be used in several places
 	sbGetPrimarySuperblock(fp);
 	unsigned int block_size = 1024 << gPrimarySuperblock.s_log_block_size;
-
+	
+	// find the first block in the filesystem with a GIF header, this is the file we need to recover
 	int first_block = searchGIF(fp);
 	printf("%d\n", first_block);
 
+	// find the indirect block for the same file
 	int indr_block = findIndirectPointerBlock(fp, first_block);
 	printf("%d\n", indr_block);
 
 	int last_block;
+	// get how many entries are in the indirect block for calculating file size
 	int indr_block_count = isIndirectBlock(fp, indr_block, &last_block);
 	printf("%d %d\n", (indr_block_count + 12) * 4096, last_block);
-
+	
+	// find the EOF marker in the last block of the file for calculating file size
 	int bytes = findEOF(fp, last_block);
 
+	// the final file size is the bytes from the last block, plus the space taken up by the other indirect blocks and the first 12 blocks
 	int total_bytes = bytes + 1 + (indr_block_count + 12) * 4096;
 	printf("size bytes: %d\n", total_bytes);
 
+	// create a new inode struct and fill out all the necessary information to recover a file
 	struct ext3_inode new_inode;
 	memset(&new_inode, 0, sizeof(new_inode));
 
@@ -483,15 +517,20 @@ int main(int argc, char **argv)
 		new_inode.i_block[i] = first_block + i;
 	}
 	new_inode.i_block[12] = indr_block;
+
+	// hardcoded value to set the permissions on the file
 	new_inode.i_mode = 33279;
 	// new_inode.i_gid = 1000;
 	new_inode.i_links_count = 1;
+	// i_blocks is the number of sectors the file takes up
 	new_inode.i_blocks = (indr_block_count + 12 + 2) * (block_size / 512);
 	printf("blocks: %d\n", new_inode.i_blocks);
 
+	// insert the new inode struct into the first free inode
 	int inode_number = insertInodeIntoGD(fp, new_inode);
 	printf("free inode: %d\n", inode_number);
 
+	// add the new inode to the directory entries in the block originally provided
 	insertInodeIntoRoot(fp, atoi(argv[2]), inode_number);
 
 	close(fp);
