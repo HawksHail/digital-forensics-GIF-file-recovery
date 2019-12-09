@@ -14,6 +14,9 @@ assignment 9 - find indirect file blocks, David Mendoza
 
 final project - typed by Zion Mantey, all contributed to merging all  assignments together correctly and adding remaining functionality (finding a free inode, calculating size, filling out inode data fields)
 
+individual authors of functions in code.
+Several functions were pulled from given code and reused.
+
 
 Usage:
 sudo ./finalproject /dev/sdxx (directory block # to add file to)
